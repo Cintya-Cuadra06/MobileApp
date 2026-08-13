@@ -1,22 +1,33 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Button, TouchableHighlight} from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView} from 'react-native';
+import { getLatestGames } from './lib/metacritic';
 
 export default function App() {
+  const [games, setGames] = useState([]);
+
+  useEffect(() => {
+    getLatestGames().then((data) => {
+      setGames(data);
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
     <StatusBar style="light" />
 
-      <TouchableHighlight
-      underlayColor="rgb(8, 42, 58)"
-      onPress={() => alert('Hola')}
-      style={{ backgroundColor: 'rgb(8, 42, 58)', width: 200, height: 50, 
-        alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}
-      >
-        <Text style={{ color: 'white' }}>Pulsa aquí</Text>
-      </TouchableHighlight>
+   {games.map((game) => (
+    <View key={game.slug} style={styles.card}>
+      <Image source={{ uri: game.image }} style={styles.image}/>
+      <Text style={styles.title}>{game.name}</Text>
+      <Text style={styles.description}>{game.description}</Text>
+      <Text style={styles.score}>{game.score}</Text>
+      </View>
+   ))}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -28,5 +39,35 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 10,
     fontWeight: 'bold',
-  }
+  },
+  card: {
+    marginBottom: 10,
+  },
+
+  image: {
+    width: 107,
+    height: 147,
+    borderRadius: 10,
+  },
+  
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#fff',
+  },
+  
+  description: {
+    fontSize: 16,
+    color: '#eee',
+  },
+  
+  score: {
+    fontSize: 16,
+    marginTop: 10,
+    fontWeight: 'bold',
+    color: 'green',
+  }, 
+
 });
+
